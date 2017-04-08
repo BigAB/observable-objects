@@ -1,0 +1,49 @@
+{
+  "parser": "babel-eslint",
+  "parserOptions": {
+    "ecmaVersion": 8,
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "arrowFunctions": true,                     // enable arrow functions
+      "modules": true,                            // enable modules
+      "binaryLiterals": false,                    // enable binary literals
+      "blockBindings": true,                      // enable let and const (aka block bindings)
+      "classes": true,                            // enable classes
+      "defaultParams": true,                      // enable default function parameters
+      "destructuring": true,                      // enable destructuring
+      "experimentalObjectRestSpread": true,
+      "forOf": true,                              // enable for-of loops
+      "generators": true,                         // enable generators
+      "impliedStrict": true,
+      "objectLiteralComputedProperties": true,    // enable computed object literal property names
+      "objectLiteralDuplicateProperties": true,   // enable duplicate object literal properties in strict mode
+      "objectLiteralShorthandMethods": true,      // enable object literal shorthand methods
+      "objectLiteralShorthandProperties": true,   // enable object literal shorthand properties
+      "octalLiterals": false,                     // enable octal literals
+      "regexUFlag": true,                         // enable the regular expression u flag
+      "regexYFlag": true,
+      "restParams": true,                         // enable the regular expression y flag
+      "spread": true,                             // enable the spread operator
+      "superInFunctions": false,                  // enable super references inside of functions
+      "templateStrings": true,                    // enable template strings
+      "unicodeCodePointEscapes": true,            // enable code point escapes
+      "globalReturn": false,                       // allow return statements in the global scope
+      "jsx": false
+    }
+  },
+  "rules": {
+    "semi": 2
+  },
+  "env": {
+    "browser": true,      // browser global variables.
+    "node": true,         // Node.js global variables and Node.js-specific rules.
+    "es6": true,
+    "mocha": true
+  },
+
+  "globals": {
+    "steal": true,
+    "System": true,
+    "Promise": true
+  },
+}
