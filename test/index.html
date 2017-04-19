@@ -1,2 +1,45 @@
 <title>Tests - Observable Objects</title>
-<script src="/node_modules/steal/steal.js" main="test/spec" mocha="bdd"></script>
+<link rel="stylesheet" href="/node_modules/mocha/mocha.css" />
+<body>
+<script src="/node_modules/steal/steal.js" main="@empty" spec="test/spec" mocha="bdd">
+import mocha from 'mocha';
+steal.import('test/spec');
+import steal from '@steal';
+import loader from '@loader';
+// import 'mocha/mocha.css';
+
+if (loader.mocha) {
+  var opts = loader.mocha;
+  mocha.setup(opts);
+}
+
+var getOpts, mochaRequire = loader.mochaRequire, global = loader.global;
+
+if (mochaRequire) {
+  getOpts = loader['import'](mochaRequire).then(function(mochaConfig) {
+    return mochaConfig.default || mochaConfig;
+  });
+} else {
+  getOpts = Promise.resolve(function() {});
+}
+
+steal.done().then(loadSpec).then(testeeInit).then(function(mochaConfig) {
+  mochaConfig(mocha);
+  mocha.run();
+});
+
+function testeeInit() {
+  if (global.Testee && global.Testee.init) {
+    global.Testee.init();
+  }
+  return getOpts;
+}
+
+function loadSpec() {
+  if (loader.spec) {
+    return steal.import(loader.spec);
+  }
+  return Promise.resolve();
+}
+</script>
+</body>

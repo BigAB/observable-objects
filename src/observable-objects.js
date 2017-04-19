@@ -9,9 +9,10 @@ const CHANGE_EVENT_NAME = 'change';
 function listen(instance, eventName) {
   return new Observable(observer => {
     // Create an event handler which sends data to the sink
-    let handler = (newVal, oldVal) => {
+    let handler = (newVal, oldVal, path) => {
       observer.next({
         target: instance,
+        path: path,
         newVal,
         oldVal,
       });
@@ -37,19 +38,18 @@ export function observable(target) {
         Reflect.construct(target, argumentsList, newTarget),
         {
           set(target, property, value, receiver) {
+            const path = property;
             if (value !== target[property]) {
               target[EVENT_EMITTER_SYMBOL].emit(
                 CHANGE_EVENT_NAME,
                 value,
                 target[property],
+                path,
               );
             }
             return Reflect.set(target, property, value, receiver);
           },
           get(target, property, receiver) {
-            if (property === 'subscribe') {
-              return subscribe;
-            }
             return Reflect.get(target, property, receiver);
           },
         },
@@ -62,9 +62,13 @@ export function observable(target) {
           value: listen(instance, CHANGE_EVENT_NAME),
         },
       });
-      const subscribe = instance[OBSERVABLE_INSTANCE_SYMBOL].subscribe.bind(
-        instance[OBSERVABLE_INSTANCE_SYMBOL],
-      );
+      Object.defineProperties(instance, {
+        subscribe: {
+          value: instance[OBSERVABLE_INSTANCE_SYMBOL].subscribe.bind(
+            instance[OBSERVABLE_INSTANCE_SYMBOL],
+          ),
+        },
+      });
       return instance;
     },
   });

@@ -1,50 +1,24 @@
-import Mocha from 'steal-mocha';
-import { assert } from 'chai';
-import ObservableObject, { observable, isObservable } from '../src/observable-objects';
+import {assert} from 'chai';
+import ObservableObject, {
+  observable,
+  isObservable,
+} from '../src/observable-objects';
 import sinon from 'sinon';
 
-describe( 'observable-objects', () => {
-
-  describe( 'ObservableObject class', () => {
-
-    it('should be extendable and create observable instances', () => {
-      const observer = {
-        next: sinon.spy()
-      };
-      class OClass extends ObservableObject {
-        constructor() {
-          super();
-          this.isGood = 'yes';
-        }
-      }
-      class SubClass extends OClass {
-        method() {
-
-        }
-      }
-      const o = new SubClass();
-      o.subscribe(observer);
-      o.prop = 'maybe?';
-      assert.ok( observer.next.calledOnce );
-    });
-
-  });
-
-  describe( 'class decorator', () => {
-
+describe('observable-objects', () => {
+  describe('class decorator', () => {
     it('should decoarate any class as observble', () => {
-      @observable
-      class MyClass {
-        method() { return this; }
+      @observable class MyClass {
+        method() {
+          return this;
+        }
       }
       const instance = new MyClass();
-      assert.ok( isObservable( instance ), 'instance is an observable-object' );
+      assert.ok(isObservable(instance), 'instance is an observable-object');
     });
-
   });
 
-  describe( 'observable instances', () => {
-
+  describe('observable instances', () => {
     let o;
 
     beforeEach(() => {
@@ -59,23 +33,23 @@ describe( 'observable-objects', () => {
     it('should call the subscribers next method when properties change', () => {
       // setup
       const observer = {
-        next: sinon.spy()
+        next: sinon.spy(),
       };
-      o.subscribe( observer );
+      o.subscribe(observer);
 
       // execute
       o.property = 'new';
 
       // assert
-      assert.ok( observer.next.calledOnce );
+      assert.ok(observer.next.calledOnce);
     });
 
     it('should NOT call the subscribers next method when properties change to the same value', () => {
       // setup
       const observer = {
-        next: sinon.spy()
+        next: sinon.spy(),
       };
-      o.subscribe( observer );
+      o.subscribe(observer);
 
       // execute
       o.property = 'value';
@@ -83,15 +57,15 @@ describe( 'observable-objects', () => {
       o.property = 'value';
 
       // assert
-      assert.ok( observer.next.calledOnce );
+      assert.ok(observer.next.calledOnce);
     });
 
     it('should call the subscribers next method everytime a property changes', () => {
       // setup
       const observer = {
-        next: sinon.spy()
+        next: sinon.spy(),
       };
-      o.subscribe( observer );
+      o.subscribe(observer);
 
       // execute
       o.property = '1 val';
@@ -100,14 +74,32 @@ describe( 'observable-objects', () => {
       o.property = 3;
 
       // assert
-      const callArgs =  observer.next.args;
-      assert.equal( observer.next.callCount, 4 );
-      assert.deepEqual( callArgs[0][0], { target: o, newVal: '1 val', oldVal: undefined } );
-      assert.deepEqual( callArgs[1][0], { target: o, newVal: '2', oldVal: '1 val' } );
-      assert.deepEqual( callArgs[2][0], { target: o, newVal: 2, oldVal: '2' } );
-      assert.deepEqual( callArgs[3][0], { target: o, newVal: 3, oldVal: 2 } );
+      const callArgs = observer.next.args;
+      assert.equal(observer.next.callCount, 4);
+      assert.deepEqual(callArgs[0][0], {
+        target: o,
+        path: 'property',
+        newVal: '1 val',
+        oldVal: undefined,
+      });
+      assert.deepEqual(callArgs[1][0], {
+        target: o,
+        path: 'property',
+        newVal: '2',
+        oldVal: '1 val',
+      });
+      assert.deepEqual(callArgs[2][0], {
+        target: o,
+        path: 'property',
+        newVal: 2,
+        oldVal: '2',
+      });
+      assert.deepEqual(callArgs[3][0], {
+        target: o,
+        path: 'property',
+        newVal: 3,
+        oldVal: 2,
+      });
     });
-
   });
-
 });
