@@ -11,6 +11,7 @@
     "src/observable-polyfill.js"
   ],
   "scripts": {
+    "commit": "git-cz",
     "precommit": "lint-staged",
     "preversion": "npm test && npm run build",
     "version": "git commit -am \"Update dist for release\" && git checkout -b release && git add -f dist/",
@@ -39,6 +40,9 @@
     "url": "https://github.com/BigAB/observable-objects/issues"
   },
   "homepage": "https://github.com/BigAB/observable-objects#readme",
+  "czConfig": {
+    "path": "node_modules/cz-conventional-changelog"
+  },
   "lint-staged": {
     "*.js": [
       "prettier --write",
@@ -90,17 +94,19 @@
     "babel-preset-stage-0": "^6.24.1",
     "browser-sync": "^2.18.8",
     "chai": "^3.5.0",
+    "commitizen": "^2.9.6",
     "concurrently": "^3.4.0",
+    "cz-conventional-changelog": "^2.0.0",
     "lint-staged": "^3.4.0",
     "mocha": "^3.2.0",
     "prettier": "^1.1.0",
+    "semantic-release": "^6.3.2",
     "sinon": "^2.1.0",
     "steal": "^1.3.2",
     "steal-mocha": "^1.0.0",
     "steal-tools": "^1.2.0",
     "testee": "^0.4.0",
-    "webpack": "^2.4.1",
-    "semantic-release": "^6.3.2"
+    "webpack": "^2.4.1"
   },
   "dependencies": {
     "babel-plugin-transform-es2015-modules-commonjs": "^6.24.1",
