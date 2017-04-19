@@ -10,6 +10,7 @@
     "src/observable-objects.js"
   ],
   "scripts": {
+    "precommit": "lint-staged",
     "preversion": "npm test && npm run build",
     "version": "git commit -am \"Update dist for release\" && git checkout -b release && git add -f dist/",
     "postversion": "git push --tags && git checkout master && git branch -D release && git push",
@@ -23,10 +24,7 @@
     "document": "documentjs",
     "start": "browser-sync start --config bs-config.js"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/BigAB/observable-objects.git"
-  },
+  "repository": "git+https://github.com/BigAB/observable-objects.git",
   "keywords": [
     "observables"
   ],
@@ -36,6 +34,12 @@
     "url": "https://github.com/BigAB/observable-objects/issues"
   },
   "homepage": "https://github.com/BigAB/observable-objects#readme",
+  "lint-staged": {
+    "*.js": [
+      "prettier --write",
+      "git add"
+    ]
+  },
   "steal": {
     "babelOptions": {
       "plugins": [
@@ -69,6 +73,8 @@
   },
   "dependencies": {
     "eventemitter3": "^2.0.3",
+    "lint-staged": "^3.4.0",
+    "prettier": "^1.1.0",
     "system.global": "^2.0.0"
   }
 }

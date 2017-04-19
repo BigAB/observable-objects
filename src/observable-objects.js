@@ -7,72 +7,75 @@ const OBSERVABLE_INSTANCE_SYMBOL = Symbol('OBSERVABLE_INSTANCE_SYMBOL');
 const CHANGE_EVENT_NAME = 'change';
 
 function listen(instance, eventName) {
-    return new Observable(observer => {
-        // Create an event handler which sends data to the sink
-        let handler = (newVal, oldVal) => {
-          observer.next({
-            target: instance,
-            newVal,
-            oldVal
-          });
-        };
+  return new Observable(observer => {
+    // Create an event handler which sends data to the sink
+    let handler = (newVal, oldVal) => {
+      observer.next({
+        target: instance,
+        newVal,
+        oldVal,
+      });
+    };
 
-        // Attach the event handler
-        instance[EVENT_EMITTER_SYMBOL].on(eventName, handler, true);
+    // Attach the event handler
+    instance[EVENT_EMITTER_SYMBOL].on(eventName, handler, true);
 
-        // Return a cleanup function which will cancel the event stream
-        return () => {
-            // Detach the event handler from the instance
-            instance[EVENT_EMITTER_SYMBOL].removeListener(eventName, handler, true);
-        };
-    });
+    // Return a cleanup function which will cancel the event stream
+    return () => {
+      // Detach the event handler from the instance
+      instance[EVENT_EMITTER_SYMBOL].removeListener(eventName, handler, true);
+    };
+  });
 }
 
-export function observable( target ) {
-
+export function observable(target) {
   target.prototype[OBSERVABLE_SYMBOL] = true;
 
-  return new Proxy( target, {
+  return new Proxy(target, {
     construct(target, argumentsList, newTarget) {
-      let instance = new Proxy( Reflect.construct(target, argumentsList, newTarget), {
-        set( target, property, value, receiver ) {
-          if (value !== target[property]) {
-            target[EVENT_EMITTER_SYMBOL].emit( CHANGE_EVENT_NAME, value, target[property] );
-          }
-          return Reflect.set( target, property, value, receiver );
+      let instance = new Proxy(
+        Reflect.construct(target, argumentsList, newTarget),
+        {
+          set(target, property, value, receiver) {
+            if (value !== target[property]) {
+              target[EVENT_EMITTER_SYMBOL].emit(
+                CHANGE_EVENT_NAME,
+                value,
+                target[property],
+              );
+            }
+            return Reflect.set(target, property, value, receiver);
+          },
+          get(target, property, receiver) {
+            if (property === 'subscribe') {
+              return subscribe;
+            }
+            return Reflect.get(target, property, receiver);
+          },
         },
-        get( target, property, receiver ) {
-          if ( property === 'subscribe' ) {
-            return subscribe;
-          }
-          return Reflect.get( target, property, receiver );
-        }
-      });
+      );
       Object.defineProperties(instance, {
         [EVENT_EMITTER_SYMBOL]: {
-          value: new EventEmitter()
+          value: new EventEmitter(),
         },
         [OBSERVABLE_INSTANCE_SYMBOL]: {
-          value: listen( instance, CHANGE_EVENT_NAME )
-        }
+          value: listen(instance, CHANGE_EVENT_NAME),
+        },
       });
-      const subscribe = instance[OBSERVABLE_INSTANCE_SYMBOL].subscribe.bind(instance[OBSERVABLE_INSTANCE_SYMBOL]);
+      const subscribe = instance[OBSERVABLE_INSTANCE_SYMBOL].subscribe.bind(
+        instance[OBSERVABLE_INSTANCE_SYMBOL],
+      );
       return instance;
-    }
-  } );
+    },
+  });
 }
 
-export  function isObservable( obj ) {
+export function isObservable(obj) {
   return !!obj[OBSERVABLE_SYMBOL];
 }
 
-export {
-  observable as decorator
-};
+export {observable as decorator};
 
-
-@observable class ObservableObject {
-
-}
+@observable class ObservableObject {}
 
 export default ObservableObject;
