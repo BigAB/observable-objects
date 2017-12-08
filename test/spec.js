@@ -63,6 +63,29 @@ describe("observable-objects", () => {
       assert.ok(observer.next.calledOnce);
     });
 
+    it("should work fine with multiple subscribers", () => {
+      // setup
+      const observerA = {
+        next: sinon.spy()
+      };
+      const observerB = {
+        next: sinon.spy()
+      };
+      const obs = Observable.from(o);
+      obs.subscribe(observerA);
+      obs.subscribe(observerB);
+
+      // execute
+      o.property = "value 1";
+      o.property = "value 2";
+      o.property = "value 3";
+
+      // assert
+      assert.equal(observerA.next.callCount, 3);
+      assert.equal(observerB.next.callCount, 3);
+      assert.deepEqual(observerA.next.args[2][0], observerB.next.args[2][0]);
+    });
+
     it("should call the subscribers next method everytime a property changes", () => {
       // setup
       const observer = {
@@ -104,6 +127,29 @@ describe("observable-objects", () => {
         oldVal: undefined
       });
     });
+
+    it(`should call the subscribers next method when "child" properties change`, () => {
+      // setup
+      o.child = { foo: "bar" };
+
+      const observer = {
+        next: sinon.spy()
+      };
+
+      Observable.from(o).subscribe(observer);
+
+      // execute
+      o.child.foo = "new value";
+
+      // assert
+      assert.ok(observer.next.calledOnce);
+      assert.deepEqual(callArgs[0][0], {
+        target: o,
+        path: "property.child.foo",
+        newVal: "new value",
+        oldVal: "bar"
+      });
+    });
   });
 
   describe("other observable/event stream libraries", () => {
@@ -135,8 +181,8 @@ describe("observable-objects", () => {
       // assert
       const callArgs = observer.next.args;
       assert.equal(observer.next.callCount, 2);
-      assert.deepEqual(callArgs[0][0], "1 val");
-      assert.deepEqual(callArgs[1][0], 2);
+      assert.equal(callArgs[0][0], "1 val");
+      assert.equal(callArgs[1][0], 2);
     });
   });
 });

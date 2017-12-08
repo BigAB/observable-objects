@@ -70,4 +70,4 @@ export { observable as decorator, observable as observeObject };
 @observable
 class ObservableObject {}
 
-export default observable(ObservableObject);
+export default ObservableObject;
