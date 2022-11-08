@@ -109,7 +109,7 @@
     "steal-mocha": "^1.0.0",
     "steal-tools": "^1.2.0",
     "testee": "^0.4.0",
-    "webpack": "^2.4.1"
+    "webpack": "^5.74.0"
   },
   "dependencies": {
     "babel-plugin-transform-es2015-modules-commonjs": "^6.24.1",
